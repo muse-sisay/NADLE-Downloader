@@ -8,13 +8,16 @@ Downloads all the books and organizes them
 let me know if there is a better one.
 
 VERSION = 0.1
-
+- TODO list
+    Get arguments from the command line
+    Read links from file
+    Remove scrapinng capabilities
 '''
 
 import re
 import json
 import requests
-import datetime
+from datetime import datetime
 from pathlib import Path
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -164,9 +167,9 @@ for i in range(72, 78189):
     except (AttributeError, IndexError):
         print('Oweee we got a problem, but continuing')
         with open('error.log', 'a') as log:
-            log.write(f'{str(datetime.now())} :> {d["URL"]}')
+            log.write(f'{str(datetime.now())} :> {d["URL"]}\n')
     except:
         print('Owee, we requested a page that doesnt exist')
         with open('error.log', 'a') as log:
             log.write(
-                f'{str(datetime.now())} Owweee this is a huge one\n\t:> {d["URL"]}')
+                f'{str(datetime.now())} Owweee this is a huge one\n\t:> {d["URL"]}\n')

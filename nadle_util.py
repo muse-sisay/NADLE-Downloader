@@ -24,15 +24,20 @@ def download_book(file, url):
     # Check if the file is half downloaded.
     if file.exists():
         #print(f'Resuming {file.stem} ...')
-        click.secho(f'Resuming {file.stem} ...', fg='yellow')
         first_byte = file.stat().st_size
     else:
         first_byte = 0
 
     if file.exists() and first_byte >= file_size:
         #print(f'Skipping {file.stem}, already downloaded.')
-        click.secho(f'Skipping {file.stem}, already downloaded.', fg='green')
+        click.secho(
+            f'\nSkipping "{file.stem}", already downloaded.', fg='green')
         return
+    else:
+        if first_byte == 0:
+            click.secho(f'\nDownloading "{file.stem}":', fg='blue')
+        else:
+            click.secho(f'\nResuming "{file.stem}" ...', fg='yellow')
 
     # If previously interrupted .
     # Only get the part that is not downloaded
@@ -132,30 +137,30 @@ def get_soup(id):
     req = requests.get(get_orginal_url(id), headers=header)
     soup = BeautifulSoup(req.text, "html.parser")
 
-    if soup.title.text == 'NADLE: Invalid Identifier' or soup.find('div', class_='browse_range'):
-        raise InvalidId
-    else:
-        return soup
+    return soup
 
 
 def get_soup_for_collection(id):
 
-    response = requests.get(get_orginal_url(id), headers=header)
+    url = f'http://ndl.ethernet.edu.et/handle/123456789/{id}/browse'
+    response = requests.get(url, headers=header)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    page_number = soup.find('div', class_='browse_range')
+    page_number = soup.find('div', class_='panel-heading text-center').text
+    last_item = [x for x in page_number.split() if x.isdigit()][-1]
 
-    if page_number:
-        ''' This little, tiny part checks if this is a valid Category URL, neat right?? '''
-        page_number = page_number.text
-        last_item = [x for x in page_number.split() if x.isdigit()][-1]
-    else:
-        raise InvalidId
+    # if page_number:
+    #     ''' This little, tiny part checks if this is a valid Category URL, neat right??
+    #     To bad we dont need no more.'''
+    #     page_number = page_number.text
+    #     last_item = [x for x in page_number.split() if x.isdigit()][-1]
+    # else:
+    #     raise InvalidId
 
     cat_url = f'http://ndl.ethernet.edu.et/handle/123456789/{id}/browse?type=title&sort_by=1&order=ASC&rpp={last_item}&etal=-1&null=&offset=0'
     req = requests.get(cat_url)
     soup = BeautifulSoup(req.text, "html.parser")
-    return soup
+    return last_item, soup
 
 
 def get_orginal_url(id):
@@ -175,3 +180,14 @@ def construct_file_paths(OPATH, data):
     fjson = pcollection / f"{data['BOOK TITLE']}.json"
 
     return fpdf, fjson
+
+
+def single_book(OPATH, id):
+    soup = get_soup(id)
+
+    d = extract_metadata(soup)
+
+    fpdf, fjson = construct_file_paths(OPATH, d)
+
+    download_book(fpdf, d['DL LINK'])
+    save_metadata_as_json(fjson, d)
