@@ -7,18 +7,17 @@
 A small python tool for downloading from NADLE.
 
 ```
-$ python3 nadle-dl.py --help
 Usage: nadle-dl.py [OPTIONS] COMMAND [ARGS]...
 
-  Downloads book
+  A small python script to facilitate downloading books from NADLE.
 
 Options:
   -o, --output PATH  Output path for downloaded files
   --help             Show this message and exit.
 
 Commands:
-  download
-  scrape    Download all the book from NADLE.
+  download  Download a single book or a collection
+  scrape    Download all the books from NADLE.
 
 ```
 

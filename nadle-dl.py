@@ -11,7 +11,9 @@ import requests
               help='Output path for downloaded files')
 @click.pass_context
 def cli(ctx, output):
-    ''' Downloads book'''
+    '''
+    A small python script to facilitate downloading books from NADLE.
+    '''
 
     OPATH = Path(output)
     ctx.obj = {'OPATH': OPATH}
@@ -21,7 +23,7 @@ def cli(ctx, output):
 @click.pass_context
 def scrape(ctx):
     '''
-    Download all the book from NADLE.
+    Download all the books from NADLE.
     '''
     OPATH = ctx.obj['OPATH']
     click.secho('SCRAPINNG THE SITE.', bg='red', fg='white')
@@ -54,6 +56,9 @@ def scrape(ctx):
 @click.argument('id')
 @click.pass_context
 def download(ctx, id):
+    '''
+    Download a single book or a collection
+    '''
 
     click.secho(f'Downloading wegpage : {get_orginal_url(id)}', bg='green')
     OPATH = ctx.obj['OPATH']
