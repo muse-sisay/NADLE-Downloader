@@ -1,5 +1,5 @@
 import click
-from nadle_util import *
+from .nadle_util import *
 from pathlib import Path
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
